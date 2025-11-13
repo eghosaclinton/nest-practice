@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import type { Profile } from './types/profile';
 import type { CreateProfileDto } from './dto/create-profile.dto';
 import { randomUUID } from 'node:crypto';
@@ -23,12 +23,17 @@ export class ProfilesService {
       description: `You think you know VIM? Try Neovim. I'll make your modal dreams come true. Want to escape the matrix and explore the perfect keyboard shortcut for love?`,
     },
   ];
+
   getProfiles() {
     return this.profiles;
   }
 
   getProfile(id: string) {
-    return this.profiles.find((profile) => profile.id == id);
+    const profile = this.profiles.find((profile) => profile.id == id);
+    if (!profile) {
+      throw new NotFoundException(`Profile with id: '${id}' not found`);
+    }
+    return profile;
   }
 
   createProfile(newProfile: CreateProfileDto) {
@@ -38,20 +43,25 @@ export class ProfilesService {
   }
 
   updateProfile(id: string, newInfo: UpdateProfileDto) {
-    const index = this.profiles.findIndex((profile) => profile.id == id);
+    const profile = this.profiles.find((profile) => profile.id == id);
 
-    if (index === -1) {
-      return {};
+    if (!profile) {
+      throw new NotFoundException(`Profile with id: '${id}' not found`);
     }
 
-    //we will handle exceptions later (like when profile is undefined)
-    return (this.profiles[index] = {
-      ...this.profiles[index],
-      ...newInfo,
-    });
+    profile.name = newInfo.name;
+    profile.description = newInfo.description;
+
+    return profile;
   }
 
   removeProfile(id: string) {
-    this.profiles = this.profiles.filter((profile) => profile.id !== id);
+    const profile = this.profiles.find((profile) => profile.id == id);
+
+    if (!profile) {
+      throw new NotFoundException(`Profile with id: '${id}' not found`);
+    }
+
+    this.profiles = this.profiles.filter((p) => p.id !== id);
   }
 }
