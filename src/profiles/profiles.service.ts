@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common';
 import type { Profile } from './types/profile';
 import type { CreateProfileDto } from './dto/create-profile.dto';
 import { randomUUID } from 'node:crypto';
+import type { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class ProfilesService {
-  private readonly profiles: Profile[] = [
+  private profiles: Profile[] = [
     {
       id: randomUUID(),
       name: 'Brianna Watts',
@@ -34,5 +35,23 @@ export class ProfilesService {
     const newLength = this.profiles.push({ id: randomUUID(), ...newProfile });
 
     return this.profiles[newLength - 1];
+  }
+
+  updateProfile(id: string, newInfo: UpdateProfileDto) {
+    const index = this.profiles.findIndex((profile) => profile.id == id);
+
+    if (index === -1) {
+      return {};
+    }
+
+    //we will handle exceptions later (like when profile is undefined)
+    return (this.profiles[index] = {
+      ...this.profiles[index],
+      ...newInfo,
+    });
+  }
+
+  removeProfile(id: string) {
+    this.profiles = this.profiles.filter((profile) => profile.id !== id);
   }
 }

@@ -38,16 +38,12 @@ export class ProfilesController {
     @Param('id') id: string,
     @Body() updateProfileDto: UpdateProfileDto,
   ) {
-    return {
-      id,
-      ...updateProfileDto,
-    };
+    return this.profilesService.updateProfile(id, updateProfileDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  // eslint-disable-next-line
   deleteProfile(@Param('id') id: string) {
-    //delete logic
+    this.profilesService.removeProfile(id);
   }
 }
