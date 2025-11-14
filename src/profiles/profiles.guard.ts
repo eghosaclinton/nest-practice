@@ -6,6 +6,6 @@ export class ProfilesGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    return false;
+    return true;
   }
 }
